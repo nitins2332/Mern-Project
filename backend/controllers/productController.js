@@ -1,5 +1,5 @@
 const express = require("express");
-const { addListener } = require("../app");
+const { addListener, purge } = require("../app");
 const Product = require("../models/productModel");
 
 // Create Product --> Admin
@@ -19,6 +19,23 @@ exports.getAllProduct = async (req, res) => {
   res.status(200).json({
     success: true,
     products,
+  });
+};
+
+// Get a Product Details
+exports.getProductDetails = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return res.status(500).json({
+      success: false,
+      message: "Product is not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
   });
 };
 
@@ -42,5 +59,25 @@ exports.updateProduct = async (req, res, next) => {
   res.status(200).json({
     success: true,
     product,
+  });
+};
+
+// Delete Product
+
+exports.deleteProduct = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return res.status(500).json({
+      success: false,
+      message: "Product Not found",
+    });
+  }
+
+  await product.remove();
+
+  res.status(200).json({
+    success: true,
+    message: "Product Delete Successfully",
   });
 };
